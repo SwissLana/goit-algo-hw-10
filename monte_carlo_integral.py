@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.integrate as spi
-import math
+
 
 # Визначення функції та меж інтегрування
 def f(x):
@@ -43,25 +43,14 @@ plt.show()
 
 
 
-
-# Визначення функції
-def f(x):
-    return np.sin(x) + 2
-
-# Межі інтегрування
-a = 0
-b = math.pi
-
-# Для прямокутника нам треба максимум функції на [a, b]
-# sin(x) досягає максимуму 1 на π/2, тому f_max = 1 + 2 = 3
-f_max = 3
-
-
 def monte_carlo_integral(num_points: int) -> float:
     """
     Метод Монте-Карло для обчислення інтеграла функції f(x)
     на відрізку [a, b].
     """
+    # Максимальне значення функції на відрізку [a, b] (для побудови прямокутника) 
+    f_max = np.max(f(np.linspace(a, b, num_points)))
+    
     # Випадкові точки
     x_rand = np.random.uniform(a, b, num_points)
     y_rand = np.random.uniform(0, f_max, num_points)
@@ -69,7 +58,7 @@ def monte_carlo_integral(num_points: int) -> float:
     # Точки, що лежать під кривою
     under_curve = y_rand <= f(x_rand)
 
-    # Частка потрапляння
+    # Частка потрапляння точок під криву
     p = np.mean(under_curve)
 
     # Площа прямокутника
@@ -86,16 +75,17 @@ if __name__ == "__main__":
         print(f"Monte Carlo (N={n}): {value}")
 
     # Аналітичне значення інтеграла
-    analytical = 2 + 2 * math.pi
+    analytical = 2 + 2 * np.pi
     print("\nАналітичний інтеграл:", analytical)
 
     # Перевірка через quad
     quad_value, quad_error = spi.quad(f, a, b)
     print("За допомогою функції quad:", quad_value)
-    print("Оцінка помилки:", quad_error)
+    print("Оцінка абсолютної помилки quad:", quad_error)
 
-    # Детальніше порівняння
-    mc_last = monte_carlo_integral(100000)
-    print("\nMonte Carlo (100000):", mc_last)
+    # Детальніше порівняння для великої кількості точок 1000000 
+    mc_last = monte_carlo_integral(1000000)
+    print("\nДетальне порівняння для N=1'000'000:")
+    print("\nMonte Carlo (1'000'000):", mc_last)
     print("Різниця з аналітичним:", abs(mc_last - analytical))
     print("Різниця з quad:", abs(mc_last - quad_value), "\n")
